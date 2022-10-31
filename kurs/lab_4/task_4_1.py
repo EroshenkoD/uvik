@@ -14,7 +14,7 @@ perfect_num = (6, 28, 496, 8128, 33550336, 8589869056, 137438691328, 23058430081
 
 try:
     col_num = int(input("Input :"))
-except:
+except ValueError:
     col_num = False
     print("Data entry is error")
 
@@ -27,5 +27,5 @@ if col_num:
     elif col_num <= 51:
         print("I don't know so many ideal numbers, ask the guys from Great Internet Mersenne Prime Search")
     else:
-        print("I don't know so many perfect numbers, but you can calculate them "
+        print("I don't know so many ideal numbers, but you can calculate them "
               "using the formula 2\u1D56\u207B\u00b9x(2\u1D56−1)")

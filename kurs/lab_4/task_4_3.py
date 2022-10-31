@@ -20,16 +20,19 @@ Examples of correct isbn-10 addresses: 1112223339, 1234554321, 048665088X
 Examples of incorrect isbn-10 addresses: 111222333, 1112223339X, 1234512345, X123456788
 """
 
+from functools import wraps
+
+
 input_text = input("Input: ")
-error_mess = "Incorrect isbn-10 addresses:"
 
 
 def my_decorator(func):
+    @wraps(func)
     def wrapper(input_text):
+        error_mess = f"Incorrect ip addresses: {input_text}"
 
         if len(input_text) != 10:
-            print(error_mess)
-            return func(input_text)
+            raise ValueError(error_mess)
 
         sum_num = 0
         index_num = 1
@@ -38,23 +41,24 @@ def my_decorator(func):
                 sum_num += (int(i) * index_num)
                 index_num += 1
             elif i == "X" and index_num == 10:
-                sum_num += (int(i) * index_num)
+                sum_num += 100
             else:
-                print(error_mess)
-                return func(input_text)
+                raise ValueError(error_mess)
 
         if sum_num % 11:
-            print(error_mess)
-            return func(input_text)
-        print("Correct isbn-10 addresses:")
-        return func(input_text)
+            raise ValueError(error_mess)
 
+        func(input_text)
     return wrapper
 
 
 @my_decorator
-def CheckISBN(arg_isbn):
-    print(arg_isbn)
+def check_isbn(arg_isbn):
+    print(f"Correct isbn-10 addresses: {arg_isbn}")
 
 
-CheckISBN(input_text)
+try:
+    check_isbn(input_text)
+except ValueError as e:
+    print(e)
+
