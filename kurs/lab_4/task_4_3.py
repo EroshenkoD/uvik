@@ -28,7 +28,7 @@ input_text = input("Input: ")
 
 def my_decorator(func):
     @wraps(func)
-    def wrapper(input_text):
+    def wrapper(*args):
         error_mess = f"Incorrect ip addresses: {input_text}"
 
         if len(input_text) != 10:
@@ -57,8 +57,10 @@ def check_isbn(arg_isbn):
     print(f"Correct isbn-10 addresses: {arg_isbn}")
 
 
-try:
-    check_isbn(input_text)
-except ValueError as e:
-    print(e)
+if __name__ == "__main__":
+
+    try:
+        check_isbn(input_text)
+    except ValueError as e:
+        print(e)
 

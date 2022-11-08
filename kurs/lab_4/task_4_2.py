@@ -16,7 +16,7 @@ input_text = input("Input: ")
 
 def my_decorator(func):
     @wraps(func)
-    def wrapper(input_text):
+    def wrapper(*args):
         error_mess = f"Incorrect ip addresses: {input_text}"
         list_num_ip = input_text.split(".")
         if len(list_num_ip) != 4:
@@ -38,7 +38,9 @@ def print_ip(arg_ip):
     print(f"Correct ip addresses: {arg_ip}")
 
 
-try:
-    print_ip(input_text)
-except ValueError as e:
-    print(e)
+if __name__ == "__main__":
+
+    try:
+        print_ip(input_text)
+    except ValueError as e:
+        print(e)
