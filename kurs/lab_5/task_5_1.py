@@ -20,9 +20,11 @@ Output: [1, 1 ,1, 3, 5, 9, 17, 31]
 Input: [0, 0, 1], 9
 Output: [0, 0, 1, 1, 2, 4, 7, 13, 24]
 """
+from functools import lru_cache
 
 
-def tri_bon(f_num, s_num, th_num, len_list):
+@lru_cache(maxsize=128)
+def get_tri_bon(f_num, s_num, th_num, len_list):
     if len_list == 0:
         return []
     res = [f_num, s_num, th_num]
@@ -34,9 +36,11 @@ def tri_bon(f_num, s_num, th_num, len_list):
     return res
 
 
-try:
-    a, b, c, d = map(float, input("Input :").split(","))
-    print(tri_bon(a, b, c, int(d)))
-except Exception as e:
-    print(e)
-
+if __name__ == "__main__":
+    try:
+        a, b, c, d = map(float, input("Input :").split(","))
+        for _ in range(2):
+            print(get_tri_bon(a, b, c, int(d)))
+    except Exception as e:
+        print(e)
+    print(get_tri_bon.cache_info())
