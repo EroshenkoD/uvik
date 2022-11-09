@@ -23,17 +23,23 @@ Note: It can happen that there are many people for a phone number num, then retu
 
 or it can happen that the number num is not in the phone book, in that case return: "Error => Not found: num"
 """
-
 import re
+from functools import lru_cache
 
 
-def file_reader(file_name):
+def read_file(file_name):
     with open(file_name) as file:
         for row in file:
             yield row
 
 
-def decoder(text_row):
+class GetPersonDataError(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
+@lru_cache(maxsize=128)
+def get_person_data(text_row):
     res = ""
 
     phone_numb = re.search(r'[+]\d{,2}[-]\d{3}[-]\d{3}[-]\d{4}', text_row)
@@ -41,14 +47,14 @@ def decoder(text_row):
         res += f'Phone => {phone_numb.group(0)[1:]}, '
         text_row = text_row.replace(phone_numb.group(0), "")
     else:
-        raise Exception("Error => Not found: num")
+        raise GetPersonDataError("Error => Not found: num")
 
     name_list = re.findall(r'[<][^<>]{0,}[>]', text_row)
     if len(name_list) == 1:
         res += f'Name => {name_list[0][1:-1:]}, '
         text_row = text_row.replace(name_list[0], "")
     else:
-        raise Exception("Error => Too many people: num")
+        raise GetPersonDataError("Error => Too many people: num")
 
     address = re.sub(r'[^a-zA-Z,\d, \.,-]', " ", text_row)
     address = address.split(" ")
@@ -59,14 +65,16 @@ def decoder(text_row):
     return res
 
 
-gen_text = file_reader('5_2.txt')
+if __name__ == "__main__":
 
-while True:
-    try:
-        text_to_decoder = next(gen_text)
-        print(decoder(text_to_decoder))
-    except StopIteration:
-        break
-    except Exception as e:
-        print(e)
+    gen_text = read_file('5_2.txt')
 
+    while True:
+        try:
+            text_to_decoder = next(gen_text)
+            print(get_person_data(text_to_decoder))
+        except StopIteration:
+            break
+        except GetPersonDataError as e:
+            print(e)
+    print(get_person_data.cache_info())

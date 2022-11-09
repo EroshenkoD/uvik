@@ -8,24 +8,45 @@ Note: Use generator for that task
 Input: 3
 Output: 6, 28, 496
 """
+from functools import lru_cache
 
-perfect_num = (6, 28, 496, 8128, 33550336, 8589869056, 137438691328, 2305843008139952128,
-               2658455991569831744654692615953842176, 191561942608236107294793378084303638130997321548169216)
 
-try:
-    col_num = int(input("Input :"))
-except ValueError:
-    col_num = False
-    print("Data entry is error")
+class IdealNumError(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
 
-if col_num:
-    if col_num <= 10:
-        res = ""
-        for i in range(col_num):
-            res += f"{perfect_num[i]}, "
-        print(f"Output: {res[:-2]}")
-    elif col_num <= 51:
-        print("I don't know so many ideal numbers, ask the guys from Great Internet Mersenne Prime Search")
-    else:
-        print("I don't know so many ideal numbers, but you can calculate them "
-              "using the formula 2\u1D56\u207B\u00b9x(2\u1D56−1)")
+
+@lru_cache(maxsize=128)
+def gen_ideal_num():
+    cur_num = 6
+    while True:
+        if cur_num == 8129:
+            raise IdealNumError("I'm tired")
+        temp_num = 0
+        for i in range(1, int(cur_num // 2) + 1):
+            if cur_num % i == 0:
+                temp_num += i
+        if temp_num == cur_num:
+            yield cur_num
+        cur_num += 1
+
+
+if __name__ == "__main__":
+
+    try:
+        col_num = int(input("Input :"))
+    except ValueError as e:
+        col_num = False
+        print(e)
+
+    if col_num:
+        my_gen = (gen_ideal_num())
+        for _ in range(col_num):
+            try:
+                print(next(my_gen))
+            except IdealNumError as e:
+                print(e)
+                break
+            except StopIteration as e:
+                print(e)
+        print(gen_ideal_num.cache_info())
