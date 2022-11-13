@@ -1,7 +1,13 @@
 """
-Class modifications
-Modify your existing topology classes with dataclass or any other library for simplification.
+Class modifications pt.2
+Modify your existing topology classes with at least one abstract class.
+
+Add magic methods to recieve description of the objects.
+Override at least one comparison method.
+Override at least one arithmetic method.
+Override at least one copying method.
 """
+
 from abc import ABC, abstractmethod
 from attr import attrs, attrib
 from dataclasses import dataclass
@@ -11,6 +17,12 @@ from collections import namedtuple
 class Truck(ABC):
     def __init__(self):
         self.truck_model = "Volvo"
+
+    def __str__(self):
+        return self.__dict__
+
+    def __repr__(self):
+        return dir(self)
 
     def we_are(self):
         return self.truck_model
@@ -72,6 +84,23 @@ class Product:
         if weight < 0 or weight > 100:
             raise ValueError(f'Max weight 100 kg')
 
+    def __cmp__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError('Only Product')
+        return self.type_product == other.type_product
+
+    def __add__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError('Only Product')
+        weight = self.weight + other.weight
+        size = {'hight': self.size['hight'] if self.size['hight'] > other.size['hight'] else other.size['hight'],
+                'width': self.size['width'] + other.size['width'],
+                'deep': self.size['hight'] if self.size['hight'] > other.size['hight'] else other.size['hight']}
+        return weight, size
+
+    def __copy__(self):
+        print('Do not copy!')
+
 
 @dataclass
 class Cargo:
@@ -89,22 +118,19 @@ CargoDelivery = namedtuple('CargoDelivery', ['start_point', 'end_point', 'truck'
 
 if __name__ == "__main__":
 
-    truck_fo_same_liquid = TruckFHTank()
-    truck_fo_same_car = TruckFLCarTransporter()
-    print(truck_fo_same_liquid.__repr__())
-    print(truck_fo_same_car.__str__())
-
     product_1 = Product('Milk', 'liquid', 10)
-    product_2 = Product('Volvo', 'car', 2)
-    print(product_1.__repr__())
-    print(product_2.__str__())
+    product_2 = Product('Volvo', 'car', 2, {'hight': 100, 'width': 150, 'deep': 300})
+    product_3 = Product('Beer', 'liquid', 2, {'hight': 30, 'width': 15, 'deep': 30})
 
-    cargo_1 = Cargo(1, 10, {'hight': 100, 'width': 150, 'deep': 300}, [product_1])
-    cargo_2 = Cargo(2, 20, {'hight': 100, 'width': 150, 'deep': 300}, list(product_2 for _ in range(6)))
-    print(cargo_1.__repr__())
-    print(cargo_2.__str__())
+    print(product_1.__cmp__(product_1))
+    print(product_1.__cmp__(product_2))
+    print(product_1.__cmp__(product_3))
 
-    order_1 = CargoDelivery('Odessa', 'Kiev', truck_fo_same_liquid, cargo_1)
-    order_2 = CargoDelivery('Odessa', 'Kiev', truck_fo_same_car, cargo_2)
-    print(order_1.__repr__())
-    print(order_2.__str__())
+    print(product_1.__add__(product_1))
+    print(product_1.__add__(product_2))
+    print(product_1.__add__(product_3))
+
+    product_1.__copy__()
+
+    print(TruckFLCarTransporter().__str__())
+    print(TruckFLCarTransporter().__repr__())
