@@ -10,6 +10,11 @@ Examples of incorrect ip addresses: 1.2.3, 1.2.3.4.5, 123.456.78.90, 123.045.067
 from dataclasses import dataclass
 
 
+class IPAddressError(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
 @dataclass
 class IPDescriptor:
     ip: str = ""
@@ -19,16 +24,16 @@ class IPDescriptor:
 
     def __set__(self, instance, ip):
         if ip:
-            error_mess = f"Incorrect ip addresses: {ip}"
+            error_mess = f"Incorrect IP addresses: {ip}"
             list_num_ip = ip.split(".")
             if len(list_num_ip) != 4:
-                raise ValueError(error_mess)
+                raise IPAddressError(error_mess)
             for i in list_num_ip:
                 if i.isdigit():
                     if any((i[0] == "0", int(i) < 0, int(i) > 255)):
-                        raise ValueError(error_mess)
+                        raise IPAddressError(error_mess)
                 else:
-                    raise ValueError(error_mess)
+                    raise IPAddressError(error_mess)
             self.ip = ip
             return self.ip
 
@@ -44,6 +49,6 @@ if __name__ == "__main__":
     for j in check_ip:
         try:
             temp.ip = j
-        except ValueError as e:
+        except IPAddressError as e:
             print(e)
-        print(temp.__str__()+"\n")
+        print(str(temp)+"\n")

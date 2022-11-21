@@ -7,7 +7,6 @@ Override at least one comparison method.
 Override at least one arithmetic method.
 Override at least one copying method.
 """
-
 from abc import ABC, abstractmethod
 from attr import attrs, attrib
 from dataclasses import dataclass
@@ -18,58 +17,70 @@ class Truck(ABC):
     def __init__(self):
         self.truck_model = "Volvo"
 
-    def __str__(self):
-        return self.__dict__
-
-    def __repr__(self):
-        return dir(self)
-
-    def we_are(self):
+    def get_truck_model(self):
         return self.truck_model
 
     @abstractmethod
-    def model(self):
+    def get_model(self):
         raise NotImplemented
 
     @abstractmethod
-    def type_truck(self):
+    def get_type_truck(self):
         raise NotImplemented
 
     @abstractmethod
-    def fuel_consumption(self):
+    def get_fuel_consumption(self):
         raise NotImplemented
 
     @abstractmethod
-    def carrying(self):
+    def get_carrying(self):
         raise NotImplemented
 
 
+@dataclass
 class TruckFHTank(Truck):
-    def model(self):
-        print(f"I'm {super().we_are()} FH")
+    pet_name: str
 
-    def type_truck(self):
+    def get_model(self):
+        print(f"I'm {super().get_truck_model()} FH")
+
+    def get_type_truck(self):
         print("For children I drive milk for adults beer")
 
-    def fuel_consumption(self):
+    def get_fuel_consumption(self):
         print("I spend 26 liters if the driver is experienced")
 
-    def carrying(self):
+    def get_carrying(self):
         print("I can pull 30 tons on a good road.")
 
+    def __str__(self):
+        return f"I'm {self.pet_name}"
 
+    def __repr__(self):
+        return f'TruckFHTank({self.pet_name})'
+
+
+@dataclass
 class TruckFLCarTransporter(Truck):
-    def model(self):
-        print(f"I'm {super().we_are()} FL")
+    pet_name: str
 
-    def type_truck(self):
+    def get_model(self):
+        print(f"I'm {super().get_truck_model()} FL")
+
+    def get_type_truck(self):
         print("I drive smaller cars")
 
-    def fuel_consumption(self):
+    def get_fuel_consumption(self):
         print("I spend 22 liters")
 
-    def carrying(self):
+    def get_carrying(self):
         print("I can pull 20 tons")
+
+    def __str__(self):
+        return f"I'm {self.pet_name}"
+
+    def __repr__(self):
+        return f'TruckFLCarTransporter({self.pet_name})'
 
 
 @attrs
@@ -85,6 +96,13 @@ class Product:
             raise ValueError(f'Max weight 100 kg')
 
     def __cmp__(self, other):
+        print("It's __cmp__")
+        if not isinstance(other, Product):
+            raise TypeError('Only Product')
+        return self.type_product == other.type_product
+
+    def __eq__(self, other):
+        print("It's __eq__")
         if not isinstance(other, Product):
             raise TypeError('Only Product')
         return self.type_product == other.type_product
@@ -98,9 +116,6 @@ class Product:
                 'deep': self.size['hight'] if self.size['hight'] > other.size['hight'] else other.size['hight']}
         return weight, size
 
-    def __copy__(self):
-        print('Do not copy!')
-
 
 @dataclass
 class Cargo:
@@ -109,28 +124,56 @@ class Cargo:
     size: dict
     list_product: list
 
-    def type_of_truck_for_delivery(self):
+    def __eq__(self, other):
+        print("It's __eq__")
+        if not isinstance(other, Cargo):
+            raise TypeError('Only Cargo')
+        return self.weight == other.weight
+
+    def __copy__(self):
+        copy = Cargo(self.id_cargo + 1,
+                     self.weight, self.size, self.list_product)
+        return copy
+
+    def get_type_of_truck_for_delivery(self):
         return f"This one will do for {self.id_cargo}"
 
 
-CargoDelivery = namedtuple('CargoDelivery', ['start_point', 'end_point', 'truck', 'cargo'])
+CargoDelivery = namedtuple('CargoDelivery', ['start_point', 'end_point', 'packagetruck', 'packagecargo'])
 
 
 if __name__ == "__main__":
+    SEPARATOR = "\n" + "/" * 100
 
     product_1 = Product('Milk', 'liquid', 10)
     product_2 = Product('Volvo', 'car', 2, {'hight': 100, 'width': 150, 'deep': 300})
     product_3 = Product('Beer', 'liquid', 2, {'hight': 30, 'width': 15, 'deep': 30})
 
-    print(product_1.__cmp__(product_1))
-    print(product_1.__cmp__(product_2))
-    print(product_1.__cmp__(product_3))
+    print(f'Print 1 {product_1 == product_1}')
+    print(f'Print 2 {product_1 == product_2}')
+    print(f'Print 3 {product_1 == product_3}')
+    print(f'Print 4 {product_1.type_product == product_3.type_product}')
+    print(f'Print 5 {product_1.__cmp__(product_3)}')
+    print(f'Print 6 {product_1.__eq__(product_3)}', SEPARATOR)
 
-    print(product_1.__add__(product_1))
-    print(product_1.__add__(product_2))
-    print(product_1.__add__(product_3))
+    print(product_1 + product_1)
+    print(product_1 + product_2)
+    print(product_1 + product_3, SEPARATOR)
 
-    product_1.__copy__()
+    print(str(TruckFLCarTransporter('truck1')))
+    print(repr(TruckFLCarTransporter('truck2')), SEPARATOR)
 
-    print(TruckFLCarTransporter().__str__())
-    print(TruckFLCarTransporter().__repr__())
+    cargo_1 = Cargo(1, 10, {'hight': 100, 'width': 150, 'deep': 300}, [product_1])
+    cargo_2 = Cargo(2, 10, {'hight': 100, 'width': 150, 'deep': 300}, list(product_2 for _ in range(6)))
+    print(cargo_1 == cargo_2)
+    print(cargo_1 is cargo_2, SEPARATOR)
+
+    cargo_3 = cargo_1.__copy__()
+    print(type(cargo_3))
+    print(type(cargo_1))
+    print(cargo_1 == cargo_3)
+    print(cargo_1 is cargo_3)
+
+
+
+
