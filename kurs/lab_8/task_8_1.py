@@ -168,7 +168,7 @@ if __name__ == "__main__":
     print(cargo_1 == cargo_2)
     print(cargo_1 is cargo_2, SEPARATOR)
 
-    cargo_3 = cargo_1.__copy__()
+    cargo_3 = copy(cargo_1)
     print(type(cargo_3))
     print(type(cargo_1))
     print(cargo_1 == cargo_3)
