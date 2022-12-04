@@ -18,8 +18,8 @@ from threading import Thread
 from time import time
 
 
-COL_PAGE = 5
-COL_IMG = 5
+NUM_PAGE = 5
+NUM_IMG = 5
 NUM_THREADS = 5
 BASIC_PART = 'img'
 THREAD_PART = 'thread_img'
@@ -41,11 +41,9 @@ def get_list_car_img(url_site, col_picture):
     if page.status_code == 200:
         soup = BeautifulSoup(page.text, "html.parser")
         list_car = soup.findAll('picture')
+        col_picture = len(list_car) if col_picture > len(list_car) else col_picture
         for j in range(col_picture):
-            try:
-                cur_car = list_car[j]
-            except IndexError:
-                continue
+            cur_car = list_car[j]
             url_photo = re.search(r'src=.+jpg', str(cur_car))
             list_url_photo.append(url_photo.group(0)[5:])
     return list_url_photo
@@ -66,11 +64,9 @@ async def get_list_car_img_as(url_site, col_picture):
         page = await session.get(url=url_site)
         soup = BeautifulSoup((await page.read()), 'html.parser')
         list_car = soup.findAll('picture')
+        col_picture = len(list_car) if col_picture > len(list_car) else col_picture
         for j in range(col_picture):
-            try:
-                cur_car = list_car[j]
-            except IndexError:
-                continue
+            cur_car = list_car[j]
             url_photo = re.search(r'src=.+jpg', str(cur_car))
             list_url_photo.append(url_photo.group(0)[5:])
         return list_url_photo
@@ -86,9 +82,9 @@ async def download_img_as(img_url, part_to_save):
 
 def run_basic_fun():
     start_time = time()
-    for num_page in range(COL_PAGE):
+    for num_page in range(NUM_PAGE):
         url = f'https://auto.ria.com/uk/legkovie/?page={num_page}'
-        list_img = get_list_car_img(url, COL_IMG)
+        list_img = get_list_car_img(url, NUM_IMG)
         for url_img in list_img:
             download_img(url_img, 'img')
     return "Basic: %s seconds" % round((time() - start_time), 2)
@@ -96,11 +92,11 @@ def run_basic_fun():
 
 def run_thread_fun():
     start_time = time()
-    for num_page in range(COL_PAGE):
+    for num_page in range(NUM_PAGE):
         q.put(f'https://auto.ria.com/uk/legkovie/?page={num_page}')
 
     for t in range(NUM_THREADS):
-        worker = Thread(target=find_and_download_img_thread, args=(q, COL_IMG, THREAD_PART))
+        worker = Thread(target=find_and_download_img_thread, args=(q, NUM_IMG, THREAD_PART))
         worker.daemon = True
         worker.start()
 
@@ -112,9 +108,9 @@ def run_as_fun():
     start_time = time()
     loop = asyncio.get_event_loop()
     tasks = []
-    for num_page in range(COL_PAGE):
+    for num_page in range(NUM_PAGE):
         url = f'https://auto.ria.com/uk/legkovie/?page={num_page}'
-        tasks.append(loop.create_task(get_list_car_img_as(url, COL_IMG)))
+        tasks.append(loop.create_task(get_list_car_img_as(url, NUM_IMG)))
     group = asyncio.gather(*tasks)
     results = loop.run_until_complete(group)
 
