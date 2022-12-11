@@ -1,0 +1,11 @@
+,user_id,post_id,text_comments,creation_date
+0,1,3,"They are written as strings of consecutive alphanumeric characters, the first character being lowercase.",2010-09-18 15:08:51.446742
+1,2,1,Atoms can contain any character if they are enclosed within single quotes and an escape convention exists which allows any character to be used within an atom.,2016-03-31 17:51:45.156852
+2,2,6,"The Galactic Empire is nearing completion of the Death Star, a space station with the power to destroy entire planets.",2021-03-21 12:40:31.863268
+3,2,2,Do you come here often?,2005-06-17 03:18:55.641287
+4,1,5,Haskell features a type system with type inference and lazy evaluation.,2003-09-14 12:54:45.104108
+5,1,5,Tuples are containers for a fixed number of Erlang data types.,2000-12-09 14:41:18.303100
+6,1,6,"Initially composing light-hearted and irreverent works, he also wrote serious, sombre and religious pieces beginning in the 1930s.",2011-01-28 21:38:03.176804
+7,1,6,Its main implementation is the Glasgow Haskell Compiler.,2001-07-24 08:15:05.619579
+8,2,1,"Erlang is a general-purpose, concurrent, functional programming language.",2019-02-16 17:17:24.524233
+9,1,2,The arguments can be primitive data types or compound data types.,2010-02-08 15:42:46.362298
