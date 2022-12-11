@@ -14,12 +14,12 @@ analyze which weeks have more alerts the ones that in the beginning of month, in
 find the region that has the greatest number of alerts
 analyze the alerts condition in your own region
 """
-from urllib.error import URLError
+import calendar
 import matplotlib.pyplot as plt
 import pandas as pd
 import pprint
-import calendar
 from datetime import datetime, timedelta
+from urllib.error import URLError
 
 
 def convert_str_to_date(date: str, with_time=True) -> datetime:
