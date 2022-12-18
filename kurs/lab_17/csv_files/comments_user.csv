@@ -1,0 +1,11 @@
+,user_id,post_id,body,creation_date
+0,5,9,Haskell features a type system with type inference and lazy evaluation.,2011-11-06 11:44:00.228184
+1,1,9,"The syntax {D1,D2,...,Dn} denotes a tuple whose arguments are D1, D2, ... Dn.",2007-01-17 13:16:00.138935
+2,5,9,"In 1989 the building was heavily damaged by fire, but it has since been restored.",2000-06-03 09:16:03.179468
+3,3,16,"She spent her earliest years reading classic literature, and writing poetry.",2011-07-16 01:52:10.746077
+4,6,1,"She spent her earliest years reading classic literature, and writing poetry.",2020-02-13 22:15:33.538255
+5,6,17,Where are my pants?,2014-03-13 19:15:06.885319
+6,1,1,The arguments can be primitive data types or compound data types.,2020-09-04 07:52:21.786178
+7,3,13,"The syntax {D1,D2,...,Dn} denotes a tuple whose arguments are D1, D2, ... Dn.",2011-09-01 20:27:17.801335
+8,2,11,"Haskell is a standardized, general-purpose purely functional programming language, with non-strict semantics and strong static typing.",2008-08-18 11:25:12.907719
+9,3,9,It is also a garbage-collected runtime system.,2009-02-18 05:01:26.334390
