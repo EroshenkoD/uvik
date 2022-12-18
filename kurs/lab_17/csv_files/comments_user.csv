@@ -1,11 +1,11 @@
-,user_id,post_id,text_comments,creation_date
-0,1,3,"They are written as strings of consecutive alphanumeric characters, the first character being lowercase.",2010-09-18 15:08:51.446742
-1,2,1,Atoms can contain any character if they are enclosed within single quotes and an escape convention exists which allows any character to be used within an atom.,2016-03-31 17:51:45.156852
-2,2,6,"The Galactic Empire is nearing completion of the Death Star, a space station with the power to destroy entire planets.",2021-03-21 12:40:31.863268
-3,2,2,Do you come here often?,2005-06-17 03:18:55.641287
-4,1,5,Haskell features a type system with type inference and lazy evaluation.,2003-09-14 12:54:45.104108
-5,1,5,Tuples are containers for a fixed number of Erlang data types.,2000-12-09 14:41:18.303100
-6,1,6,"Initially composing light-hearted and irreverent works, he also wrote serious, sombre and religious pieces beginning in the 1930s.",2011-01-28 21:38:03.176804
-7,1,6,Its main implementation is the Glasgow Haskell Compiler.,2001-07-24 08:15:05.619579
-8,2,1,"Erlang is a general-purpose, concurrent, functional programming language.",2019-02-16 17:17:24.524233
-9,1,2,The arguments can be primitive data types or compound data types.,2010-02-08 15:42:46.362298
+,user_id,post_id,body,creation_date
+0,5,9,Haskell features a type system with type inference and lazy evaluation.,2011-11-06 11:44:00.228184
+1,1,9,"The syntax {D1,D2,...,Dn} denotes a tuple whose arguments are D1, D2, ... Dn.",2007-01-17 13:16:00.138935
+2,5,9,"In 1989 the building was heavily damaged by fire, but it has since been restored.",2000-06-03 09:16:03.179468
+3,3,16,"She spent her earliest years reading classic literature, and writing poetry.",2011-07-16 01:52:10.746077
+4,6,1,"She spent her earliest years reading classic literature, and writing poetry.",2020-02-13 22:15:33.538255
+5,6,17,Where are my pants?,2014-03-13 19:15:06.885319
+6,1,1,The arguments can be primitive data types or compound data types.,2020-09-04 07:52:21.786178
+7,3,13,"The syntax {D1,D2,...,Dn} denotes a tuple whose arguments are D1, D2, ... Dn.",2011-09-01 20:27:17.801335
+8,2,11,"Haskell is a standardized, general-purpose purely functional programming language, with non-strict semantics and strong static typing.",2008-08-18 11:25:12.907719
+9,3,9,It is also a garbage-collected runtime system.,2009-02-18 05:01:26.334390

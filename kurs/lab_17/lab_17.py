@@ -51,7 +51,7 @@ def get_name_all_table(conn: psycopg2) -> list:
 
 def create_file_with_data_for_table_users(num_user: int) -> None:
     path_to_photo = './avatar/avatar.jpg'
-    columns = ('first_name', 'last_name', 'phone', 'email', 'password_user',
+    columns = ('first_name', 'last_name', 'phone', 'email', 'password_hash',
                'registration_date', 'last_login', 'path_to_photo')
     data = []
     for i in range(num_user):
@@ -69,11 +69,11 @@ def insert_data_from_csv_file_to_table_users(conn: psycopg2) -> None:
         with open('./csv_files/users.csv') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                temp = (row['first_name'], row['last_name'], row['phone'], row['email'], row['password_user'],
+                temp = (row['first_name'], row['last_name'], row['phone'], row['email'], row['password_hash'],
                         row['registration_date'], row['last_login'], row['path_to_photo'])
                 curr.execute('''
                 INSERT INTO users (
-                first_name, last_name, phone, email, password_user, registration_date, last_login, path_to_photo
+                first_name, last_name, phone, email, password_hash, registration_date, last_login, path_to_photo
                 ) 
                 VALUES (%s, %s, %s, %s, crypt(%s, gen_salt('bf')), %s, %s, %s) RETURNING id_user''', temp)
                 conn.commit()
@@ -86,12 +86,12 @@ def insert_data_permission_for_user(id_user: int, conn: psycopg2) -> None:
         curr.execute("SELECT * FROM typePermission")
         all_permission = curr.fetchall()
         temp = (id_user, all_permission[randint(0, len(all_permission) - 1)][0])
-        curr.execute("INSERT INTO permissionUser (user_id, type_permission_id) VALUES (%s, %s)", temp)
+        curr.execute("INSERT INTO userPermission (user_id, type_permission_id) VALUES (%s, %s)", temp)
         conn.commit()
 
 
 def create_file_with_data_for_table_posts(num_posts: int, conn: psycopg2) -> None:
-    columns = ('user_id', 'category_id', 'title_post', 'text_post', 'creation_date', 'validity_date')
+    columns = ('user_id', 'category_id', 'title', 'body', 'creation_date', 'validity_date')
     data = []
     with conn.cursor() as curr:
         curr.execute("SELECT * FROM users")
@@ -114,10 +114,10 @@ def insert_data_all_posts_and_add_photo(conn: psycopg2) -> None:
         with open('./csv_files/posts.csv') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                temp = (row['user_id'], row['category_id'], row['title_post'], row['text_post'],
+                temp = (row['user_id'], row['category_id'], row['title'], row['body'],
                         row['creation_date'], row['validity_date'])
                 curr.execute('''INSERT INTO posts (
-                user_id, category_id, title_post, text_post, creation_date, validity_date
+                user_id, category_id, title, body, creation_date, validity_date
                 ) 
                 VALUES (%s, %s, %s, %s, %s, %s) RETURNING id_post''', temp)
                 conn.commit()
@@ -147,7 +147,7 @@ def insert_data_with_photos_for_posts(conn: psycopg2) -> None:
 
 
 def create_file_with_data_for_table_comments_user(num_comments: int, conn: psycopg2) -> None:
-    columns = ('user_id', 'post_id', 'text_comments', 'creation_date')
+    columns = ('user_id', 'post_id', 'body', 'creation_date')
     data = []
     with conn.cursor() as curr:
         curr.execute("SELECT * FROM users")
@@ -168,9 +168,9 @@ def insert_data_comments_user(conn: psycopg2) -> None:
         with open('./csv_files/comments_user.csv') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                temp = (row['user_id'], row['post_id'], row['text_comments'], row['creation_date'])
-                curr.execute('''INSERT INTO comments_user (
-                user_id, post_id, text_comments, creation_date
+                temp = (row['user_id'], row['post_id'], row['body'], row['creation_date'])
+                curr.execute('''INSERT INTO userComments (
+                user_id, post_id, body, creation_date
                 ) 
                 VALUES (%s, %s, %s, %s)''', temp)
         conn.commit()
