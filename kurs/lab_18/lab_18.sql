@@ -85,6 +85,13 @@ SELECT p.user_id FROM posts AS p);
 SELECT u.id_user, u.first_name, u.last_name FROM users AS u WHERE id_user = (SELECT u.id_user INTERSECT
 SELECT p.user_id FROM posts AS p);
 
+/* 2.8 ROLLBACK */
+
+INSERT INTO categories (description) VALUES ('SOME TOPIC');
+SELECT * FROM categories;
+ROLLBACK;
+SELECT * FROM categories;
+
 /* 3 Add statements to work with the db.
 3.1 transactions (at least 2) */
 
@@ -98,6 +105,7 @@ START TRANSACTION;
 DELETE FROM categories WHERE description = 'T6';
 DELETE FROM categories WHERE description = 'T7';
 COMMIT;
+
 
 /* 3.2 coalesce */
 
