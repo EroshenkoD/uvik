@@ -18,119 +18,115 @@ class SimpleCustomMiddleware(Middleware):
 app.add_middleware(SimpleCustomMiddleware)
 
 
-@app.route("/posts?{data}")
-def posts_params(request, response, data):
+@app.route("/posts/{pk}")
+def posts_work_by_id(request, response, pk):
     method = request.method
     if method == "GET":
-        response.text = found_posts_by_params(data)
-
-
-@app.route("/posts/{data}")
-def posts_work_by_id(request, response, data):
-    method = request.method
-    if method == "GET":
-        response.text = get_post_by_id(data)
+        response.text, response.status_code = get_post_by_id(pk)
     elif method == "PUT":
-        response.text = update_post_by_id(data, json.loads(request.body.decode("UTF-8")))
+        response.text, response.status_code = update_post_by_id(pk, json.loads(request.body.decode("UTF-8")))
     elif method == "PATCH":
-        response.text = patch_post_by_id(data, json.loads(request.body.decode("UTF-8")))
+        response.text, response.status_code = patch_post_by_id(pk, json.loads(request.body.decode("UTF-8")))
     elif method == "DELETE":
-        response.text = delete_post_by_id(data)
+        response.text, response.status_code = delete_post_by_id(pk)
 
 
 @app.route("/posts/")
 def posts(request, response):
     method = request.method
     if method == "GET":
-        response.text = get_all_posts()
+        if request.params:
+            response.text, response.status_code = found_posts_by_params(request.params)
+        else:
+            response.text, response.status_code = get_all_posts()
     elif method == "POST":
         data = json.loads(request.body.decode("UTF-8"))
         if type(data) is dict:
-            response.text = insert_post(data)
+            response.text, response.status_code = insert_post(data)
         else:
-            response.text = insert_many_posts(data)
+            response.text, response.status_code = insert_many_posts(data)
 
 
-def check_data(id_num=False, num_of_likes=False):
-    if id_num is not False:
-        if not str(id_num).isdigit():
-            return 'No correct ID'
+def validate(pk=False, num_of_likes=False):
+    if pk is not False:
+        if not str(pk).isdigit():
+            return 'No correct ID', 400
     if num_of_likes is not False:
         if not str(num_of_likes).isdigit():
-            return 'No correct number of likes'
+            return 'No correct number of likes', 400
 
 
-def get_post_by_id(id_num):
-    check = check_data(id_num=id_num)
+def get_post_by_id(pk):
+    check = validate(pk=pk)
     if check:
         return check
-    data = db.get_record_by_id(id_num)
+    data = db.get_record_by_id(pk)
     if data:
-        return f"{json.dumps(data, indent = 5)}"
-    return 'No data'
+        return f"{json.dumps(data, indent = 5)}", 200
+    return 'No data', 204
 
 
-def update_post_by_id(id_num, body_data):
-    check = check_data(id_num, num_of_likes=body_data['likes'])
+def update_post_by_id(pk, body_data):
+    check = validate(pk, num_of_likes=body_data['likes'])
     if check:
         return check
-    data = db.update_record(id_num, body_data['title'], body_data['body'], body_data['likes'])
+    data = db.update_record(pk, body_data['title'], body_data['body'], body_data['likes'])
     if data:
-        return f"{json.dumps(data, indent = 5)}"
-    return 'Not found record to update'
+        return f"{json.dumps(data, indent = 5)}", 201
+    return 'Not found record to update', 204
 
 
-def patch_post_by_id(id_num, body_data):
+def patch_post_by_id(pk, body_data):
     title, body, likes = body_data.get('title', False), body_data.get('body', False), body_data.get('likes', False)
     if not any([title, body, likes]):
-        return 'Not found column'
-    check = check_data(id_num, num_of_likes=likes)
+        return 'Not found column', 400
+    check = validate(pk, num_of_likes=likes)
     if check:
         return check
-    data = db.patch_update_record(id_num, title, body, likes)
+    data = db.patch_update_record(pk, title, body, likes)
     if data:
         return f"{json.dumps(data, indent = 5)}"
-    return 'Not found record by id'
+    return 'Not found record by id', 404
 
 
 def found_posts_by_params(data):
-    data = data.split("=")
-    if len(data) != 2:
-        return 'Not correct data'
-    name_col, num_likes = data[0], data[1]
-    check = check_data(num_of_likes=num_likes)
+    name_col = 'likes'
+    num_likes = data.get(name_col, False)
+    if not num_likes:
+        return 'Not found key', 400
+    check = validate(num_of_likes=num_likes)
     if check:
         return check
     data = db.get_record_with_like(name_col, num_likes)
     if data:
-        return f"{json.dumps(data, indent = 5)}"
+        return f"{json.dumps(data, indent = 5)}", 200
     else:
-        return 'No data'
+        return 'No data', 204
 
 
-def delete_post_by_id(id_num):
-    check = check_data(id_num)
+def delete_post_by_id(pk):
+    check = validate(pk)
     if check:
         return check
-    return db.delete_record(id_num)
+    return db.delete_record(pk)
 
 
 def get_all_posts():
     data = db.get_all_records()
     if data:
-        return f"{json.dumps(data, indent = 5)}"
-    return 'No data'
+        return f"{json.dumps(data, indent = 5)}", 200
+    return 'No data', 204
 
 
 def insert_post(body_data):
     title, body, likes = body_data.get('title', False), body_data.get('body', False), body_data.get('likes', False)
     if not any([title, body, likes]):
-        return 'Not found data for all column'
-    check = check_data(num_of_likes=likes)
+        return 'Not found data for all column', 400
+    check = validate(num_of_likes=likes)
     if check:
         return check
     data = db.add_new_record(title, body, likes)
-    return f"{json.dumps(data, indent = 5)}"
+    return f"{json.dumps(data, indent = 5)}", 201
 
 
 def insert_many_posts(body_data):

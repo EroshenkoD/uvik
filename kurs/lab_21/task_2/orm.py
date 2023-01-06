@@ -38,10 +38,10 @@ class Database:
             last_id = cur.lastrowid
             return self.get_record_by_id(last_id)
 
-    def get_record_by_id(self, id_num):
+    def get_record_by_id(self, pk):
         with self.connection as conn:
             cur = conn.cursor()
-            cur.execute(f"SELECT * FROM {self.name_table} WHERE id = ? ;", (id_num,))
+            cur.execute(f"SELECT * FROM {self.name_table} WHERE id = ? ;", (pk,))
             data = cur.fetchall()
             if not data:
                 return False
@@ -54,9 +54,6 @@ class Database:
 
     def get_record_with_like(self, name_col, data_col):
         with self.connection as conn:
-            list_col = self.get_all_column()
-            if name_col not in list_col:
-                return False
             cur = conn.cursor()
             cur.execute(f"SELECT * FROM {self.name_table} WHERE {name_col} = ? ;", (data_col,))
             data = cur.fetchall()
@@ -71,41 +68,35 @@ class Database:
                 res.append(temp)
             return res
 
-    def update_record(self, id_num, title, body, likes):
+    def update_record(self, pk, title, body, likes):
         with self.connection as conn:
-            check = self.get_record_by_id(id_num)
+            check = self.get_record_by_id(pk)
             if not check:
                 return False
             cur = conn.cursor()
             cur.execute(f"UPDATE {self.name_table} SET 'title' = ? , body = ?, likes = ? WHERE id = ?;",
-                        (title, body, likes, id_num))
+                        (title, body, likes, pk))
             conn.commit()
-            return self.get_record_by_id(id_num)
+            return self.get_record_by_id(pk)
 
-    def patch_update_record(self, id_num, title=False, body=False, likes=False):
-        temp = self.get_record_by_id(id_num)
+    def patch_update_record(self, pk, title=False, body=False, likes=False):
+        temp = self.get_record_by_id(pk)
         if not temp:
             return False
         title = temp['title'] if not title else title
         body = temp['body'] if not body else body
         likes = temp['likes'] if not likes else likes
-        return self.update_record(id_num, title, body, likes)
+        return self.update_record(pk, title, body, likes)
 
-    def delete_record(self, id_num):
-        check = self.get_record_by_id(id_num)
+    def delete_record(self, pk):
+        check = self.get_record_by_id(pk)
         if not check:
-            return 'Not found record by id'
+            return 'Not found record by id', 204
         with self.connection as conn:
             cur = conn.cursor()
-            cur.execute(f"DELETE FROM {self.name_table} WHERE id = ?;", (id_num,))
+            cur.execute(f"DELETE FROM {self.name_table} WHERE id = ?;", (pk,))
             conn.commit()
-            return 'Record was deleted'
-
-    def get_all_column(self):
-        with self.connection as conn:
-            cur = conn.cursor()
-            cur.execute(f"SELECT * FROM {self.name_table}")
-            return list(map(lambda x: x[0], cur.description))
+            return 'Record was deleted', 200
 
     def add_many_new_record(self, data):
         with self.connection as conn:
@@ -119,9 +110,9 @@ class Database:
                 return str(e)
             except KeyError as e:
                 conn.rollback()
-                return f'Not found  key {e}'
+                return f'Not found  key {e}', 204
             conn.commit()
-            return 'Successfully'
+            return 'Successfully', 201
 
 
 if __name__ == "__main__":

@@ -31,7 +31,8 @@ class API:
 
     def handle_request(self, request):
         response = Response()
-        handler, kwargs = self.find_handler(request_path=request.path_qs)
+        response.content_type = "application/json"
+        handler, kwargs = self.find_handler(request_path=request.path)
         if handler is not None:
             handler(request, response, **kwargs)
         else:
