@@ -57,9 +57,9 @@ def validate(pk=False, num_of_likes=False):
 
 
 def get_post_by_id(pk):
-    check = validate(pk=pk)
-    if check:
-        return check
+    error_message = validate(pk=pk)
+    if error_message:
+        return error_message
     data = db.get_record_by_id(pk)
     if data:
         return f"{json.dumps(data, indent = 5)}", 200
@@ -67,9 +67,9 @@ def get_post_by_id(pk):
 
 
 def update_post_by_id(pk, body_data):
-    check = validate(pk, num_of_likes=body_data['likes'])
-    if check:
-        return check
+    error_message = validate(pk, num_of_likes=body_data['likes'])
+    if error_message:
+        return error_message
     data = db.update_record(pk, body_data['title'], body_data['body'], body_data['likes'])
     if data:
         return f"{json.dumps(data, indent = 5)}", 201
@@ -80,9 +80,9 @@ def patch_post_by_id(pk, body_data):
     title, body, likes = body_data.get('title', False), body_data.get('body', False), body_data.get('likes', False)
     if not any([title, body, likes]):
         return 'Not found column', 400
-    check = validate(pk, num_of_likes=likes)
-    if check:
-        return check
+    error_message = validate(pk, num_of_likes=likes)
+    if error_message:
+        return error_message
     data = db.patch_update_record(pk, title, body, likes)
     if data:
         return f"{json.dumps(data, indent = 5)}"
@@ -94,9 +94,9 @@ def found_posts_by_params(data):
     num_likes = data.get(name_col, False)
     if not num_likes:
         return 'Not found key', 400
-    check = validate(num_of_likes=num_likes)
-    if check:
-        return check
+    error_message = validate(num_of_likes=num_likes)
+    if error_message:
+        return error_message
     data = db.get_record_with_like(name_col, num_likes)
     if data:
         return f"{json.dumps(data, indent = 5)}", 200
@@ -105,9 +105,9 @@ def found_posts_by_params(data):
 
 
 def delete_post_by_id(pk):
-    check = validate(pk)
-    if check:
-        return check
+    error_message = validate(pk)
+    if error_message:
+        return error_message
     return db.delete_record(pk)
 
 
@@ -122,9 +122,9 @@ def insert_post(body_data):
     title, body, likes = body_data.get('title', False), body_data.get('body', False), body_data.get('likes', False)
     if not any([title, body, likes]):
         return 'Not found data for all column', 400
-    check = validate(num_of_likes=likes)
-    if check:
-        return check
+    error_message = validate(num_of_likes=likes)
+    if error_message:
+        return error_message
     data = db.add_new_record(title, body, likes)
     return f"{json.dumps(data, indent = 5)}", 201
 
