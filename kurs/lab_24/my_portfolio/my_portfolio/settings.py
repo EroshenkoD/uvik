@@ -134,6 +134,14 @@ CACHES = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
     'formatters': {
         'file': {
             'format': '{levelname} {asctime} {module} {message}',
@@ -148,19 +156,25 @@ LOGGING = {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'console'
+            'formatter': 'console',
+            'filters': ['debug_true']
         },
         'file': {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
             'formatter': 'file',
             'filename': 'my_portfolio.log',
+            'filters': ['debug_false']
         }
     },
     'loggers': {
-        'main': {
-            'handlers': ['console'] if DEBUG else ['file'],
+        'console': {
+            'handlers': ['console'],
             'level': 'INFO',
+        },
+        'file': {
+            'handlers': ['file'],
+            'level': 'WARNING',
         },
     }
 }
